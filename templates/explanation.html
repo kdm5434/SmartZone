@@ -3,10 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>길찾기</title>
+    <title>길정보</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVnteL9JlOKZwa0cUk52PgpuqVYi7rZZQ&callback=initMap" async defer></script>
+    <style>
+        .bnb{
+            background-color: #007BFF; 
+            color: white; 
+            border: none; 
+            border-radius: 25px; 
+            padding: 10px 20px; 
+            margin-bottom: 3%;
+            cursor: pointer; 
+            font-size: 16px; 
+        }
+    </style>
+    <script>
+        // 기본값 설정 (예시)
+        function next_step() {
+            const currentEx = parseInt(location.href.split('/').pop()); // URL의 마지막 부분을 가져옴
+            const newEx = currentEx + 1; // 1 증가
+            // 다음 단계가 존재하는지 확인
+            if (newEx > 5) { 
+                alert("다음 단계가 없습니다."); // 경고 메시지
+            } else {
+                location.href = `/explanation/${newEx}`; // 새로운 URL로 리다이렉트
+            }
+        }
+        function back_step() {
+            const currentEx = parseInt(location.href.split('/').pop()); // URL의 마지막 부분을 가져옴
+            const newEx = currentEx - 1; // 1 감소
+            // 이전 단계가 존재하는지 확인
+            if (newEx < 0) { // 0보다 작으면
+                alert("이전 단계가 없습니다."); // 경고 메시지
+            } else {
+                location.href = `/explanation/${newEx}`; // 새로운 URL로 리다이렉트
+            }
+        }
+        function back(){
+            var y = document.getElementById('end');
+                location.href = `/2/${y}`
+        }        // 교통수단으로 경로 요청
+        function requestTransitRoute(start, end) {
+            const directionsService = new google.maps.DirectionsService();
+            const request = {
+                origin: start,
+                destination: end,
+                travelMode: google.maps.TravelMode.TRANSIT // 교통수단으로 설정
+            };
+
+            directionsService.route(request, function(result, status) {
+                if (status === 'OK') {
+                    // 경로가 성공적으로 반환되면 처리
+                    console.log(result);
+                } else {
+                    console.error('경로 요청 실패: ' + status);
+                }
+            });
+        }
+
+        // 로드뷰 초기화 함수
+        function initMap() {
+            var panorama = new google.maps.StreetViewPanorama(
+                document.getElementById('pano'), {
+                    position: {lat:  37.4979, lng: 127.0276}, // 초기 위치 설정
+                    center: {lat:  37.4979, lng: 127.0276},
+                    zoom: 1
+                });
+            var panorama = new google.maps.Map(
+                document.getElementById('map'), {
+                    position: {lat:  37.4979, lng: 127.0276}, // 초기 위치 설정
+                    center: {lat:  37.4979, lng: 127.0276},
+                    zoom: 14
+                })
+        }
+    </script>
 </head>
 <body>
-    <h1>Step 1</h1>
-    <p>{{information}}</p>
+    
+    <button class="bnb" onclick="back()"> < 뒤로가기</button>
+    <button class="bnb" onclick="next_step()">다음 단계</button>
+    <button class="bnb" onclick="back_step()">이전 단계</button>    
+    <p>도보 정보: {{ walk_info }}</p>
+    <p>소요 시간: {{ wt_info }}</p>
+    <div id="pano" style="height: 500px; width: 100%;"></div> <!-- 로드뷰를 표시할 div 추가 -->
+    <div id="map" style="height: 300px; width: 100%;"></div>
 </body>
 </html>

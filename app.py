@@ -1,10 +1,13 @@
-
 from flask import Flask, render_template,request,jsonify
 import requests
 import json
+from flask import session
+
+
 
 app = Flask(__name__)
 
+app.secret_key = 'your_secret_key_here'
 SERVICEKEY = "d7iGEJ7vE1GYoJUrlr+y0onNlkLk6aP4J2OuEuPDHSSOiwL50qskxZ7ZYFrf3Nl2U4RgM37BTTODpyxsPilBFA=="
 LAT = "36.7848475"
 LNG = "126.4505035"
@@ -85,20 +88,14 @@ def navigate(end):
             print(dic)
             result['item'].append(dic)
     print(result)
-    return render_template('navigate.html',end = end,result=result)
-@app.route("/notification", methods=['POST','GET'])
+    
+    # Save the 'end' value in the session
+    session['end_value'] = end
+    return render_template('navigate.html', end=end, result=result)
+
+@app.route("/notification")
 def n():
-    if request.method == 'POST':
-        data = request.get_json()
-        if data:
-            print("DATA:")
-            print(data)
-            overview = data['overview_path']
-            for i in overview:
-                print(i)
-            return render_template("notification.html", data=data)
-    else: 
-        return render_template("notification.html")
+    return render_template("notification.html")
 
 def seconds_to_minutes(seconds):
                 minutes = seconds // 60
@@ -107,13 +104,37 @@ def seconds_to_minutes(seconds):
 def convert_list_of_seconds_to_minutes(lst_time):
     minutes_seconds_list = [seconds_to_minutes(seconds) for seconds in lst_time]
     return minutes_seconds_list
-@app.route("/exaplanation/step<int:step>")
+
+@app.route("/save_info", methods=['POST'])
+def ex_post():
+    if request.method == 'POST':
+        data = request.get_json()
+        if data:
+            print("DATA: ", data)
+            session['walk_info'] = data['walk_info']  # walk_info를 세션에 저장
+            session['wt_info'] = data['wt_info']      # wt_info를 세션에 저장
+            session['splat'] = data['splat']
+            session['splng'] = data['splng']
+        return "success", 200
+
+@app.route("/explanation/<int:step>")
 def ex(step):
-     for i in range(step):
-          i += 1
-     lat = 0
-     lng = 0
-     information = ""
-     return render_template("explanation.html",lat=lat,lng=lng,information=information)
+    walk_info = session.get('walk_info', [])
+    wt_info = session.get('wt_info', [])
+    end = session['end_value']
+
+    print(walk_info)
+    print(wt_info)
+    walk_info = walk_info[step]
+    wt_info = wt_info[step]
+    splat = splat[step]
+    splng = splng[step]
+    lat = 0
+    lng = 0
+    information = 0
+    return render_template("explanation.html",lat=lat,lng=lng,information=information,step=step,walk_info=walk_info,wt_info=wt_info,end=end,splat = splat,splng=splng)
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port= "8080",debug=True)    
+
+

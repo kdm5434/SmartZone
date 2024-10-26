@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>출발지점</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
@@ -63,10 +64,8 @@
                         var lat = position.coords.latitude;
                         var lon = position.coords.longitude;
                         document.getElementById('start').value = `${lat}, ${lon}`;
-                    }, function(error) {
-                        alert("위치를 가져오는데 실패했습니다: " + error.message);
-                    });
-                }
+                    }, 
+                )};
             }
         </script>
     </head>

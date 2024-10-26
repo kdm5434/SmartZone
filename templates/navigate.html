@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>길찾기</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
+        /* 상단 메뉴 및 버튼 스타일 */
         .size {
             display: flex;
+            justify-content: space-between;
+            background-color: rgba(255, 255, 255, 0.8);
             padding: 10px;
-            font-size: 110%;
-            justify-content: space-evenly;
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            z-index: 1;
         }
         #map {
-            height: 100%;
+            flex: 1;
             width: 100%;
         }
         html, body {
@@ -20,100 +26,198 @@
             margin: 0;
             padding: 0;
         }
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+        #menu {
+            display: none; /* 메뉴는 기본적으로 숨김 */
+            flex-direction: column;
+            position: absolute;
+            top: 50px;
+            left: 10px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 버튼 스타일 */
+        .menu-button {
+            background-color: #007BFF; 
+            color: white; 
+            border: none; 
+            border-radius: 25px; 
+            padding: 10px 20px; 
+            margin-bottom: 3%;
+            cursor: pointer; 
+            font-size: 16px; 
+            transition: background-color 0.3s; 
+        }
+        #menuButton{
+            margin-bottom: 0%;
+        }
+        .menu-button:hover {
+            background-color: #0056b3; /* 호버 시 더 어두운 파란색 */
+        }
+
+        /* 설명 박스 스타일 */
+        #exa{
+            display: none; /* 설명 박스는 기본적으로 숨김 */
+            flex-direction: column;
+            position: absolute;
+            top: 60px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .deb {
+            background-color: #007BFF; 
+            color: white; 
+            border: none; 
+            border-radius: 25px; 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            transition: background-color 0.3s; 
+        }
+        .deb:hover {
+            background-color: #0056b3; /* 호버 시 더 어두운 파란색 */
+        }
+        
+        .button-container {
+            display: flex; 
+            gap: 10px; /* 버튼 간의 간격 */
+            align-items: center;
+        }
     </style>
     <script>
+        // 메뉴 토글 함수
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            const menuButton = document.getElementById('menuButton');
+
+            if (menu.style.display === 'none' || menu.style.display === '') {
+                menu.style.display = 'flex'; 
+                menuButton.innerText = '메뉴 닫기'; 
+            } else {
+                menu.style.display = 'none';
+                menuButton.innerText = '메뉴 열기';
+            }
+        }
+
+        // 설명 박스 토글 함수
+        function example() {
+            const exa = document.getElementById('exa')
+            const de = document.getElementById('de')
+            if (exa.style.display === 'none' || exa.style.display === '') {
+                exa.style.display = 'flex'; 
+                de.innerText = '설명 닫기'; 
+            } else {
+                exa.style.display = 'none';
+                de.innerText = '설명 열기';
+            }
+        }
+        
+        // 홈으로 이동하는 함수
         function abc() {
             location.href = `/`;
         }
 
+        // 이전 페이지로 돌아가는 함수
         function back() {
             const s = localStorage.getItem('start');
             location.href = `/1/${s}`;
         }
-        function nfc() {
-                console.log("nav:",navigation);
-                $.ajax({
-                    url: '/notification', // 요청할 URL
-                    type: 'POST', // 요청 방식
-                    data: JSON.stringify(navigation),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        console.log(response);
-                        location.href = "/notification"
-                    },
-                    error: function(xhr, status, error) {
-                        // 요청 실패 시 실행될 코드
-                        console.error('Error: ' + error);
-                    }
-                });
+
+        // 설명 페이지로 이동하는 함수
+        function ex() {
+            location.href="/explanation/0"
         }
-        function ex(){
-            location.href = "/explanation"
+            
+        // 알림 페이지로 이동하는 함수
+        function nfc() {
+            location.href="/notification"
         }
 
-        let information= `
+        // 정보 템플릿
+        let information = `
         <p style="font-size:200%" id="distance">총 거리: </p> 
-        <p style="font-size:200%" id="start_address">출발 주소:</p>
+        <p style="font-size:200%" id="start_address">출발 주소: </p>
         <br>
         <p style="font-size:200%" id="end_address">도착 주소:</p>
         <br>
-        <p style="font-size:200%" id="duration">걸리는 시간: </p>
-        <p style="font-size:200%" id="price2">버스 가격: </p>
         <p style="font-size:200%" id="arrival_time">도착 시간:</p>
         <br>
         <p style="font-size: 200%" id="instruction">도보:</p>;
         <p style="font-size: 200%" id="walktime">도보에서 도보1까지 걸리는 시간:</p>`;
 
-
-
         let state = 0;
 
+        // 정보 표시 함수
         function inf() {
             const area = document.getElementById('info');
             if (state == 0) {
                 area.innerHTML = information;
                 state = 1;
-                
+
                 console.log(navigation);
                 var time = navigation.legs[0].arrival_time.text;
                 var saddress = navigation.legs[0].start_address;
                 var eaddress = navigation.legs[0].end_address;
 
-                //step 이 3이상일수도 있는데..? 
-                //for문 써야함.
-                for(let i=0;i<navigation.legs[0].steps.length;i++){
-                    walk= navigation.legs[0].steps[i].instructions;
-                    wt=navigation.legs[0].steps[i].duration.text;
+                // steps가 존재하는지 확인
+                if (navigation.legs.length > 0 && navigation.legs[0].steps.length > 0) {
+                    let walk_info = [];
+                    let wt_info = [];
+                    let splat = [];
+                    let splng = [];
+                    for (let i = 0; i < navigation.legs[0].steps.length; i++) {
+                        walk = navigation.legs[0].steps[i].instructions;
+                        wt = navigation.legs[0].steps[i].duration.text;
+                        lat = navigation.legs[0].steps[i].start_point.lat;
+                        lng = navigation.legs[0].steps[i].start_point.lng;
+                        // walk와 wt 정보를 배열에 추가
+                        walk_info.push(walk);
+                        wt_info.push(wt);
+                        splat.push(lat);
+                        splng.push(lng);
 
-                    console.log(`도보${i + 1}: ${walk}`);
-                    console.log(`소요 시간: ${wt}`);    
+                        console.log(`도보${i + 1}: ${walk}`);
+                        console.log(`소요 시간: ${wt}`);
 
-                    const element = document.createElement('div');
-                    element.innerText =`도보${i + 1}: ${walk}`;
-                    document.getElementById('instruction').appendChild(element);
-                    const element1 = document.createElement('div');
-                    element1.innerText = `도보${i + 1}에서 도보${i+2}까지 걸리는 시간: ${wt}`;
-                    document.getElementById('walktime').appendChild(element1)
+                        const element = document.createElement('div');
+                        element.innerText = `도보${i + 1}: ${walk}`;
+                        document.getElementById('instruction').appendChild(element);
+                        const element1 = document.createElement('div');
+                        element1.innerText = `도보${i + 1}에서 도보${i + 2}까지 걸리는 시간: ${wt}`;
+                        document.getElementById('walktime').appendChild(element1);
+                    }
+
+                    // AJAX를 사용하여 walk_info와 wt_info를 세션에 저장
+                    $.ajax({
+                        url: '/save_info', // 요청할 URL
+                        type: 'POST', // 요청 방식
+                        data: JSON.stringify({ walk_info: walk_info, wt_info: wt_info, splat:splat,splng:splng }), 
+                        contentType: 'application/json',
+                        success: function(response) {
+                            console.log('세션 저장 성공:', response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error: ' + error); 
+                        }
+                    });
+                } else {
+                    console.error("No steps available in navigation data.");
                 }
-                console.log(walk)
-                console.log(wt)
-                console.log(navigation); 
-                //console.log(fare);
-            
-        
-    
-                //document.getElementById('price2').innerText = `버스 가격: ${fare}원`;
+
+                // 도착 시간 및 주소 정보 업데이트
                 document.getElementById('arrival_time').innerText = `도착 시간: ${time}`;
                 document.getElementById('start_address').innerText = `출발 주소: ${saddress}`;
                 document.getElementById('end_address').innerText = `도착 주소: ${eaddress}`;
-                document.getElementById('start_lat').innerText = `출발 위도: ${slat}`;
-                document.getElementById('start_lng').innerText = `출발 경도: ${slng}`;
-                document.getElementById('end_lat').innerText = `도착 위도: ${elat}`;
-                document.getElementById('end_lng').innerText = `도착 경도: ${elng}`;
-
-                
-
-                
             } else {
                 area.innerHTML = "";
                 state = 0;
@@ -122,13 +226,29 @@
     </script>
 </head>
 <body>
-    <p>버스 정보는 버스 마커를 클릭해 주세요</p>
     <div class="size">
-        <button onclick="inf()">정보</button>
-        <button onclick="abc()">처음부터</button>
-        <button onclick="back()">도착지점 다시 적기</button>
-        <button onclick="nfc()">로드뷰 길</button>
-        <button onclick="ex()">길찾기 시작</button>
+        <div class="button-container"> <!-- 버튼들을 감싸는 div 추가 -->
+            <button id="de" class="deb" onclick="example()">설명 열기</button>
+            <button id="menuButton" class="menu-button" onclick="toggleMenu()">메뉴 열기</button>
+        </div>
+        <div id="exa"> 
+            <p>버스마커를 클릭면 버스정보가 나옵니다.</p>
+            <p>메뉴 버튼을 누르면 다양한 기능을 볼수있습니다.</p>
+            <p>정보 버튼을 누르면 상세한 정보들이 나옵니다.</p>
+            <p>처음부터라는 버튼은 출발지점부터 다시 적을수 있습니다.</p>
+            <p>도착지점 부터 다시 적기는 도착지점 부터 다시 적을수 있습니다.</p>
+            <p>로드뷰는 자기가 원하는 위치에 로드뷰를 볼수 있습니다.</p>
+            <p>길찾기시작은 지도랑 로드뷰 글로 설명을 해줍니다 하지만 정보 버튼을 누른 다음에 사용을 해주세요.</p>
+            <p>되돌아가면 돌아가기 버튼을 누르거나 눌렀던 버튼을 다시 눌러주세요.</p>
+        </div>
+        <div id="menu"> <!-- 메뉴 -->
+            <button class="menu-button" onclick="inf()">정보</button>
+            <button class="menu-button" onclick="abc()">처음부터</button>
+            <button class="menu-button" onclick="back()">도착지점 다시 적기</button>
+            <button class="menu-button" onclick="nfc()">로드뷰 길</button>
+            <button class="menu-button" onclick="ex()">길찾기 시작</button>
+            
+        </div>
     </div>
     
     <div id="info"></div>  
@@ -148,7 +268,45 @@
 
             map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 14,
-                center: defaultLocation
+                center: defaultLocation,
+                styles: [ 
+                    {
+                        "featureType": "water",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#blue"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "landscape",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#f2f2f2"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#ffffff"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "color": "#e0e0e0"
+                            }
+                        ]
+                    }
+                ]
             });
             directionsService = new google.maps.DirectionsService();
             directionsRenderer = new google.maps.DirectionsRenderer();
@@ -179,7 +337,7 @@
         }
 
         function route() {
-            console.log("경로 찾기 실행");
+            console.log("길 찾기 실행");
             const start = localStorage.getItem('start');
             const end = localStorage.getItem('end');
 
@@ -238,6 +396,12 @@
             const seconds = time % 60;
             return `${minutes}분 ${seconds}초`;
         }
+    </script>
+    <script>
+        // 페이지가 로드될 때 자동으로 세션 초기화
+        window.onload = function() {
+            clearSession(); // 세션 초기화 함수 호출
+        };
     </script>
 </body>
 </html>
