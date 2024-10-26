@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+    #map {
+        height: 100%;
+        width: 100%;
+    }
+    html, body {
+        height: 100%;
+        margin: 0%;
+        padding: 0%;
+    }
+    </style>
+</head>
+<body>
+    <input style="font-size:300%" id="start" type="text" placeholder="출발지" >
+    <input style="font-size:300%" id="end" type="text" placeholder="도착지" >
+    <button style="font-size:300%" onclick="route()">경로 찾기</button>
+    <p style="font-size:200%" id="distance">총 거리: </p> 
+    <p style="font-size:200%" id="start_address">출발 주소:</p>
+    <p style="font-size:200%" id="start_lat">시작 위도:</p>
+    <p style="font-size:200%" id="start_lng">시작 경도:</p>
+    <br>
+    <p style="font-size:200%" id="end_address">도착 주소:</p>
+    <p style="font-size:200%" id="end_lat">도착 위도:</p>
+    <p style="font-size:200%" id="end_lng">도착 경도:</p>
+    <br>
+    <p style="font-size:200%" id="duration">걸리는 시간: </p>
+    <p style="font-size:200%" id="price2">버스 가격: </p>
+    <p style="font-size:200%" id="arrival_time">도착 시간:</p>
+    <br>
+    <p style="font-size: 200%" id="instruction">도보1:</p>
+    <p style="font-size: 200%" id="walktime">도보1에서 도보2까지 걸리는 시간:</p>
+    <p style="font-size: 200%" id="instruction1">도보2:</p>
+    <p style="font-size: 200%" id="walktime1">도보2에서 도보3까지 걸리는 시간:</p>
+    <p style="font-size: 200%" id="instruction2">도보3:</p>
+    <p style="font-size: 200%" id="walktime2">도보3에서 도착까지 걸리는 시간:</p>
+    <div id="map"></div>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVnteL9JlOKZwa0cUk52PgpuqVYi7rZZQ&callback=initMap"></script>
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer;
+
+        function initMap() {
+            const defaultLat = 36.7848475; 
+            const defaultLng = 126.4505035;
+            const defaultLocation = { lat: defaultLat, lng: defaultLng };
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 14,
+                center: defaultLocation
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+        }
+
+        function route() {
+            console.log("경로 찾기 실행");
+            const start = document.getElementById('start').value;
+            const end = document.getElementById('end').value;
+            const request = {
+                origin: start,
+                destination: end,
+                travelMode: google.maps.TravelMode.TRANSIT 
+            };
+            directionsService.route(request, function(result, status) {
+                if (status === 'OK') {            
+                    directionsRenderer.setDirections(result);
+
+                    const route = result.routes[0];
+                    console.log(route);
+                    let totalDistance = 0;
+                    let totalDuration = 0;
+                    for (let i = 0; i < route.legs.length; i++) {
+                        totalDistance += route.legs[i].distance.value;
+                        totalDuration += route.legs[i].duration.value;
+                    }        
+                    time = route.legs[0].arrival_time.text;
+                    saddress = route.legs[0].start_address;
+                    eaddress = route.legs[0].end_address;
+                    slat = route.legs[0].start_location.lat.toString();
+                    slng = route.legs[0].start_location.lng.toString();
+                    elat = route.legs[0].end_location.lat.toString();
+                    elng = route.legs[0].end_location.lng.toString();
+                    fare = route.fare.value
+                    walk = route.legs[0].steps[0].instructions
+                    wt = route.legs[0].steps[0].duration.text
+                    walk1 = route.legs[0].steps[1].instructions
+                    wt1 = route.legs[0].steps[1].duration.text
+                    walk2 = route.legs[0].steps[2].instructions
+                    wt2 = route.legs[0].steps[2].duration.text
+                
+                    document.getElementById('distance').innerText = `총 거리: ${totalDistance} m`;
+                    document.getElementById('duration').innerText = `걸리는 시간: ${Math.round(totalDuration / 60)} 분`;
+                    document.getElementById('price2').innerText = `버스 가격: ${fare}원`;
+                    document.getElementById('arrival_time').innerText=`도착 시간: ${time}`;
+                    document.getElementById('start_address').innerText=`출발 주소: ${saddress}`;
+                    document.getElementById('end_address').innerText=`도착 주소: ${eaddress}`;
+                    document.getElementById('start_lat').innerText=`출발 위도: ${slat}`;
+                    document.getElementById('start_lng').innerText=`출발 경도: ${slng}`;
+                    document.getElementById('end_lat').innerText=`도착 위도: ${elat}`;
+                    document.getElementById('end_lng').innerText=`도착 경도: ${elng}`;
+                    document.getElementById('instruction').innerText=`도보1: ${walk}`;
+                    document.getElementById('walktime').innerText=`도보1에서 도보2까지 걸리는 시간: ${wt}`;
+                    document.getElementById('instruction1').innerText=`도보2: ${walk1}`;
+                    document.getElementById('walktime1').innerText=`도보2에서 도보3까지 걸리는 시간: ${wt1}`;
+                    document.getElementById('instruction2').innerText=`도보3: ${walk2}`;
+                    document.getElementById('walktime2').innerText=`도보3에서 도착까지 걸리는 시간: ${wt2}`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

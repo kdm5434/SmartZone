@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            #size{
+                position: relative;
+                display: flex;
+                padding: 5px;
+                font-size: 150%;
+                width: 100%;
+                border-radius: 5px;
+                justify-content: center;
+                top: 50px;
+                color: white;
+                background-color: rgba(0, 0, 255, 0.664);
+
+            }
+            .parent{
+                display: flex;
+                justify-content: center;
+            }
+            #end{
+    
+                font-size:170%;
+                background-color: rgba(185, 185, 185, 0.212);
+                border: none;
+                padding: 30px;
+                border-radius: 5px;
+                outline: none; /* 기본 외곽선 제거 */
+            }
+            #end:focus {
+                border-bottom:10px solid rgb(31, 53, 255);
+                background-color: lightyellow;
+                
+            }
+            #end::selection{
+                background: rgb(29, 198, 255); /* 선택한 텍스트의 배경 색상 */
+                color: rgb(32, 108, 114);
+            }
+        </style>
+        <script>
+            function complete(){
+                var y = document.getElementById('end').value;
+                location.href = `/2/${y}`
+                localStorage.setItem('end', y);
+            }
+        </script>
+    </head>
+    <body>
+        <P style="font-size: 300%;">도착지</P>
+        <p>도착지를 입력하세요.EX)서산 XXX, 서울 XXX</p>
+        <div class="parent">
+            <input id="end" type="text" placeholder="도착지" >
+        </div>
+        <button onclick="complete()" id="size">다음.</button>    
+
+
+</html>

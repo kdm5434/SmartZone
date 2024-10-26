@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            #size{
+                position: relative;
+                display: flex;
+                padding: 5px;
+                font-size: 150%;
+                width: 100%;
+                border-radius: 5px;
+                justify-content: center;
+                top: 50px;
+                color: white;
+                background-color: rgba(0, 0, 255, 0.664);
+
+            }
+            .parent{
+                display: flex;
+                justify-content: center;
+            }
+            #start{
+    
+                font-size:170%;
+                background-color: rgba(185, 185, 185, 0.212);
+                border: none;
+                padding: 30px;
+                border-radius: 5px;
+                outline: none; /* 기본 외곽선 제거 */
+            }
+            #start:focus {
+                border-bottom:10px solid rgb(31, 53, 255);
+                background-color: lightyellow;
+                
+            }
+            #start::selection{
+                background: rgb(29, 198, 255); /* 선택한 텍스트의 배경 색상 */
+                color: rgb(32, 108, 114);
+            }
+            #current-location {
+                position:absolute;
+                margin-top: 10px;
+                padding: 10px;
+                color: rgb(0, 0, 0);
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            
+        </style>
+        <script>
+            function abc(){
+                var x = document.getElementById('start').value;
+                location.href = `/1/${x}`;
+                localStorage.setItem('start', x);
+            }
+
+            function getCurrentLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var lat = position.coords.latitude;
+                        var lon = position.coords.longitude;
+                        document.getElementById('start').value = `${lat}, ${lon}`;
+                    }, function(error) {
+                        alert("위치를 가져오는데 실패했습니다: " + error.message);
+                    });
+                }
+            }
+        </script>
+    </head>
+    <body>
+        
+        <P style="font-size: 300%">출발지</P>
+        <p>출발지를 입력하세요.EX)서산 XXX, 서울 XXX</p>
+        <div class="parent">
+            <input id="start" type="text" placeholder="출발지" >
+        </div>
+        <div class="parent">
+            <button id="current-location" onclick="getCurrentLocation()">현재 위치 사용</button>
+        </div>
+        <button onclick="abc()" id="size">다음.</button>
+    </body>
+</html>

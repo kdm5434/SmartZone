@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .size {
+            display: flex;
+            padding: 10px;
+            font-size: 110%;
+            justify-content: space-evenly;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script>
+        function abc() {
+            location.href = `/`;
+        }
+
+        function back() {
+            const s = localStorage.getItem('start');
+            location.href = `/1/${s}`;
+        }
+        function nfc() {
+                console.log("nav:",navigation);
+                $.ajax({
+                    url: '/notification', // 요청할 URL
+                    type: 'POST', // 요청 방식
+                    data: JSON.stringify(navigation),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        console.log(response);
+                        location.href = "/notification"
+                    },
+                    error: function(xhr, status, error) {
+                        // 요청 실패 시 실행될 코드
+                        console.error('Error: ' + error);
+                    }
+                });
+        }
+        function ex(){
+            location.href = "/explanation"
+        }
+
+        let information= `
+        <p style="font-size:200%" id="distance">총 거리: </p> 
+        <p style="font-size:200%" id="start_address">출발 주소:</p>
+        <br>
+        <p style="font-size:200%" id="end_address">도착 주소:</p>
+        <br>
+        <p style="font-size:200%" id="duration">걸리는 시간: </p>
+        <p style="font-size:200%" id="price2">버스 가격: </p>
+        <p style="font-size:200%" id="arrival_time">도착 시간:</p>
+        <br>
+        <p style="font-size: 200%" id="instruction">도보:</p>;
+        <p style="font-size: 200%" id="walktime">도보에서 도보1까지 걸리는 시간:</p>`;
+
+
+
+        let state = 0;
+
+        function inf() {
+            const area = document.getElementById('info');
+            if (state == 0) {
+                area.innerHTML = information;
+                state = 1;
+                
+                console.log(navigation);
+                var time = navigation.legs[0].arrival_time.text;
+                var saddress = navigation.legs[0].start_address;
+                var eaddress = navigation.legs[0].end_address;
+
+                //step 이 3이상일수도 있는데..? 
+                //for문 써야함.
+                for(let i=0;i<navigation.legs[0].steps.length;i++){
+                    walk= navigation.legs[0].steps[i].instructions;
+                    wt=navigation.legs[0].steps[i].duration.text;
+
+                    console.log(`도보${i + 1}: ${walk}`);
+                    console.log(`소요 시간: ${wt}`);    
+
+                    const element = document.createElement('div');
+                    element.innerText =`도보${i + 1}: ${walk}`;
+                    document.getElementById('instruction').appendChild(element);
+                    const element1 = document.createElement('div');
+                    element1.innerText = `도보${i + 1}에서 도보${i+2}까지 걸리는 시간: ${wt}`;
+                    document.getElementById('walktime').appendChild(element1)
+                }
+                console.log(walk)
+                console.log(wt)
+                console.log(navigation); 
+                //console.log(fare);
+            
+        
+    
+                //document.getElementById('price2').innerText = `버스 가격: ${fare}원`;
+                document.getElementById('arrival_time').innerText = `도착 시간: ${time}`;
+                document.getElementById('start_address').innerText = `출발 주소: ${saddress}`;
+                document.getElementById('end_address').innerText = `도착 주소: ${eaddress}`;
+                document.getElementById('start_lat').innerText = `출발 위도: ${slat}`;
+                document.getElementById('start_lng').innerText = `출발 경도: ${slng}`;
+                document.getElementById('end_lat').innerText = `도착 위도: ${elat}`;
+                document.getElementById('end_lng').innerText = `도착 경도: ${elng}`;
+
+                
+
+                
+            } else {
+                area.innerHTML = "";
+                state = 0;
+            }
+        }
+    </script>
+</head>
+<body>
+    <p>버스 정보는 버스 마커를 클릭해 주세요</p>
+    <div class="size">
+        <button onclick="inf()">정보</button>
+        <button onclick="abc()">처음부터</button>
+        <button onclick="back()">도착지점 다시 적기</button>
+        <button onclick="nfc()">로드뷰 길</button>
+        <button onclick="ex()">길찾기 시작</button>
+    </div>
+    
+    <div id="info"></div>  
+    <div id="map"></div>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVnteL9JlOKZwa0cUk52PgpuqVYi7rZZQ&callback=initMap"></script>
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer;
+        let navigation;
+
+        function initMap() {
+            const defaultLat = 36.7848475; 
+            const defaultLng = 126.4505035;
+            const defaultLocation = { lat: defaultLat, lng: defaultLng };
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 14,
+                center: defaultLocation
+            });
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    // 사용자의 현재 위치에 마커 추가
+                    new google.maps.Marker({
+                        position: userLocation,
+                        map: map,
+                        title: '내 위치',
+                        icon: {
+                            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                        }
+                    });
+
+                    // 지도의 중심을 사용자의 위치로 이동
+                    map.setCenter(userLocation);
+                });
+            }
+            route();
+        }
+
+        function route() {
+            console.log("경로 찾기 실행");
+            const start = localStorage.getItem('start');
+            const end = localStorage.getItem('end');
+
+            if (start && end) {
+                const request = {
+                    origin: start,
+                    destination: end,
+                    travelMode: google.maps.TravelMode.TRANSIT
+                };
+
+                directionsService.route(request, function(result, status) {
+                    if (status == 'OK') {
+                        directionsRenderer.setDirections(result);
+                        navigation = result.routes[0];
+                    }
+                }); 
+            }
+            const result = JSON.parse('{{ result | tojson | safe }}');
+            console.log(result);
+
+            if (result.item && result.item.length > 0) {
+                result.item.forEach((station) => {
+                    const marker = new google.maps.Marker({
+                        position: { lat: station.lat, lng: station.lon },
+                        map: map,
+                        title: '버스 정류장'
+                    });
+
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: `
+                            <div>
+                                <strong>위도:</strong> ${station.lat}<br>
+                                <strong>경도:</strong> ${station.lon}<br>
+                                <strong>버스 정보:</strong><br>
+                                ${station.bus.map(bus => `
+                                    <div>
+                                        <strong>노선:</strong> ${bus.routeno}<br>
+                                        <strong>도착 시간 몇뒤:</strong> ${formatTime(bus.arrtime)}<br>
+                                        <strong>경로 유형:</strong> ${bus.routetp}<br>
+                                        <strong>차량 종류:</strong> ${bus.vehicletp}<br>
+                                        <strong>버스 타는 곳:</strong> ${bus.nodenm}
+                                    </div>
+                                `).join('<hr>')}
+                            </div>
+                        `
+                    });
+
+                    marker.addListener("click", () => {
+                        infoWindow.open(map, marker);
+                    });
+                });
+            }
+        }
+        function formatTime(time) {
+            const minutes = Math.floor(time / 60);
+            const seconds = time % 60;
+            return `${minutes}분 ${seconds}초`;
+        }
+    </script>
+</body>
+</html>

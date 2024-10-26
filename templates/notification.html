@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps Street View</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVnteL9JlOKZwa0cUk52PgpuqVYi7rZZQ"></script>
+    <style>
+        #pano {
+            height: 100%;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #size{
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="pano"></div>
+    <button onclick="before()" id="size">이전.</button>
+    <script>
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        function initMap() {
+            const lat = parseFloat(getUrlParameter('lat')) || 37.48744000000001;
+            const lng = parseFloat(getUrlParameter('lng')) || 126.72336000000001;
+            const location = { lat: lat, lng: lng };
+            const panorama = new google.maps.StreetViewPanorama(
+                document.getElementById('pano'), {
+                    position: location,
+                    pov: {
+                        heading: 165,
+                        pitch: 0
+                    },
+                    zoom: 1
+                });
+        }
+
+        // Google Maps API 로드 후 initMap 함수 호출
+        google.maps.event.addDomListener(window, 'load', initMap);
+    </script>
+</body>
+</html>
