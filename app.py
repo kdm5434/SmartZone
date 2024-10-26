@@ -127,12 +127,10 @@ def ex(step):
     print(wt_info)
     walk_info = walk_info[step]
     wt_info = wt_info[step]
-    splat = splat[step]
-    splng = splng[step]
     lat = 0
     lng = 0
     information = 0
-    return render_template("explanation.html",lat=lat,lng=lng,information=information,step=step,walk_info=walk_info,wt_info=wt_info,end=end,splat = splat,splng=splng)
+    return render_template("explanation.html",lat=lat,lng=lng,information=information,step=step,walk_info=walk_info,wt_info=wt_info,end=end)
 
 if __name__ == '__main__':
     app.run(port= "8080",debug=True)    
