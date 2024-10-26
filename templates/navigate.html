@@ -145,15 +145,16 @@
 
         // 정보 템플릿
         let information = `
-        <p style="font-size:200%" id="distance">총 거리: </p> 
-        <p style="font-size:200%" id="start_address">출발 주소: </p>
-        <br>
-        <p style="font-size:200%" id="end_address">도착 주소:</p>
-        <br>
-        <p style="font-size:200%" id="arrival_time">도착 시간:</p>
-        <br>
+        <p style="font-size:200%" id="distance">총 거리: </p>;
+        <p style="font-size:200%" id="start_address">출발 주소: </p>;
+        <br>;
+        <p style="font-size:200%" id="end_address">도착 주소:</p>;
+        <br>;
+        <p style="font-size:200%" id="arrival_time">도착 시간:</p>;
+        <br>;
         <p style="font-size: 200%" id="instruction">도보:</p>;
         <p style="font-size: 200%" id="walktime">도보에서 도보1까지 걸리는 시간:</p>`;
+        
 
         let state = 0;
 
@@ -163,7 +164,7 @@
             if (state == 0) {
                 area.innerHTML = information;
                 state = 1;
-
+            
                 console.log(navigation);
                 var time = navigation.legs[0].arrival_time.text;
                 var saddress = navigation.legs[0].start_address;
@@ -176,18 +177,21 @@
                     let splat = [];
                     let splng = [];
                     for (let i = 0; i < navigation.legs[0].steps.length; i++) {
+                        console.log(navigation.legs[0])
                         walk = navigation.legs[0].steps[i].instructions;
                         wt = navigation.legs[0].steps[i].duration.text;
-                        lat = navigation.legs[0].steps[i].start_point.lat;
-                        lng = navigation.legs[0].steps[i].start_point.lng;
+                        lat = navigation.legs[0].steps[i].start_point.lat();
+                        lng = navigation.legs[0].steps[i].start_point.lng();
                         // walk와 wt 정보를 배열에 추가
                         walk_info.push(walk);
                         wt_info.push(wt);
-                        splat.push(lat);
+                        splat.push(lat);    
                         splng.push(lng);
 
                         console.log(`도보${i + 1}: ${walk}`);
                         console.log(`소요 시간: ${wt}`);
+                        console.log(`위도:${splat}`)
+                        console.log(`경도:${splng}`)
 
                         const element = document.createElement('div');
                         element.innerText = `도보${i + 1}: ${walk}`;
@@ -195,6 +199,9 @@
                         const element1 = document.createElement('div');
                         element1.innerText = `도보${i + 1}에서 도보${i + 2}까지 걸리는 시간: ${wt}`;
                         document.getElementById('walktime').appendChild(element1);
+
+
+                        
                     }
 
                     // AJAX를 사용하여 walk_info와 wt_info를 세션에 저장
@@ -261,9 +268,10 @@
         let directionsRenderer;
         let navigation;
 
+
         function initMap() {
-            const defaultLat = 36.7848475; 
-            const defaultLng = 126.4505035;
+            const defaultLat = localStorage.getItem('start'); 
+            const defaultLng = localStorage.getItem('end');
             const defaultLocation = { lat: defaultLat, lng: defaultLng };
 
             map = new google.maps.Map(document.getElementById('map'), {

@@ -121,16 +121,20 @@ def ex_post():
 def ex(step):
     walk_info = session.get('walk_info', [])
     wt_info = session.get('wt_info', [])
+    splat = session.get('splat',[])
+    splng = session.get('splng',[])
     end = session['end_value']
 
     print(walk_info)
     print(wt_info)
     walk_info = walk_info[step]
     wt_info = wt_info[step]
+    splat = splat[step]
+    splng = splng[step]
     lat = 0
     lng = 0
     information = 0
-    return render_template("explanation.html",lat=lat,lng=lng,information=information,step=step,walk_info=walk_info,wt_info=wt_info,end=end)
+    return render_template("explanation.html",lat=lat,lng=lng,information=information,step=step,walk_info=walk_info,wt_info=wt_info,end=end,splat = splat,splng = splng)
 
 if __name__ == '__main__':
     app.run(port= "8080",debug=True)    

@@ -25,11 +25,13 @@
     <script>
         // 기본값 설정 (예시)
         function next_step() {
+            let walk_info = '{{ walk_info }}'
+            console.log(walk_info)
             const currentEx = parseInt(location.href.split('/').pop()); // URL의 마지막 부분을 가져옴
             const newEx = currentEx + 1; // 1 증가
             // 다음 단계가 존재하는지 확인
-            if (newEx > 5) { 
-                alert("다음 단계가 없습니다."); // 경고 메시지
+            if (newEx >= walk_info.length) { 
+                alert("다음 단게는 없습니다. 길이: " + '{{ walk_info }}'); // 경고 메시지
             } else {
                 location.href = `/explanation/${newEx}`; // 새로운 URL로 리다이렉트
             }
@@ -65,22 +67,33 @@
                 }
             });
         }
-
         // 로드뷰 초기화 함수
         function initMap() {
+            let startlat = '{{ splat }}'; // '{{ splat }}' 값을 사용
+            let startlng = '{{ splng }}'; // '{{ splng }}' 값을 사용
+            console.log(Number(startlat))
+            console.log(Number(startlng))
             var panorama = new google.maps.StreetViewPanorama(
                 document.getElementById('pano'), {
-                    position: {lat:  37.4979, lng: 127.0276}, // 초기 위치 설정
-                    center: {lat:  37.4979, lng: 127.0276},
+                    position: {lat: Number(startlat), lng: Number(startlng)}, // 초기 위치 설정
+                    center: {lat:  Number(startlat), lng: Number(startlng)},
                     zoom: 1
                 });
-            var panorama = new google.maps.Map(
+            var map = new google.maps.Map(
                 document.getElementById('map'), {
-                    position: {lat:  37.4979, lng: 127.0276}, // 초기 위치 설정
-                    center: {lat:  37.4979, lng: 127.0276},
+                    center: {lat: Number(startlat), lng: Number(startlng)}, // 초기 위치 설정
                     zoom: 14
-                })
+                });
+            
+            // 마커 추가
+            const walkInfoLocation = { lat: Number(startlat), lng: Number(startlng) }; // walk_info의 위치로 변경 필요
+            const marker = new google.maps.Marker({
+                position: walkInfoLocation,
+                map: map,
+                title: '도보 정보 위치' // 마커의 제목
+            });
         }
+    
     </script>
 </head>
 <body>
@@ -90,6 +103,9 @@
     <button class="bnb" onclick="back_step()">이전 단계</button>    
     <p>도보 정보: {{ walk_info }}</p>
     <p>소요 시간: {{ wt_info }}</p>
+    <p>위도: {{ splat }}</p>
+    <p>경도: {{ splng }}</p>
+    
     <div id="pano" style="height: 500px; width: 100%;"></div> <!-- 로드뷰를 표시할 div 추가 -->
     <div id="map" style="height: 300px; width: 100%;"></div>
 </body>
