@@ -8,408 +8,488 @@
     <style>
         /* 상단 메뉴 및 버튼 스타일 */
         .size {
-            display: flex;
-            justify-content: space-between;
-            background-color: rgba(255, 255, 255, 0.8);
             padding: 10px;
-            position: absolute;
-            top: 10px;
-            width: 100%;
-            z-index: 1;
+            position:fixed; /* 고정 위치 */
+            top: 300px; /* 상단에서의 위치 */
+            width: 100%; /* 전체 너비 */
+            z-index: 100000; /* 다른 요소 위에 표시 */
+            background-color: rgba(255, 255, 255, 0); /* 투명 배경 */
         }
         #map {
-            flex: 1;
-            width: 100%;
+            flex: 1; /* 유연한 크기 */
+            width: 100%; /* 전체 너비 */
+            height: 100vh; /* 전체 높이 설정 */
         }
         html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
+            height: 100%; /* 전체 높이 */
+            margin: 0; /* 기본 여백 제거 */
+            padding: 0; /* 기본 패딩 제거 */
         }
         body {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            margin: 0;
+            display: flex; /* 플렉스 박스 레이아웃 */
+            flex-direction: column; /* 세로 방향 정렬 */
+            height: 100vh; /* 전체 높이 */
+            margin: 0; /* 기본 여백 제거 */
         }
         #menu {
             display: none; /* 메뉴는 기본적으로 숨김 */
-            flex-direction: column;
-            position: absolute;
-            top: 50px;
-            left: 10px;
-            padding: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            flex-direction: column; /* 세로 방향 정렬 */
+            position: fixed; /* 고정 위치 */
+            top: 50px; /* 상단에서의 위치 */
+            left: 10px; /* 왼쪽에서의 위치 */
+            padding: 10px; /* 내부 여백 */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
         }
-
+        #tmi {
+            display: none; /* TMI 박스는 기본적으로 숨김 */
+            flex-direction: column; /* 세로 방향 정렬 */
+            position: fixed; /* 고정 위치 */
+            top: 50px; /* 상단에서의 위치 */
+            left: 10px; /* 왼쪽에서의 위치 */
+            padding: 10px; /* 내부 여백 */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+        }
         /* 버튼 스타일 */
-        .menu-button {
-            background-color: #007BFF; 
-            color: white; 
-            border: none; 
-            border-radius: 25px; 
-            padding: 10px 20px; 
-            margin-bottom: 3%;
-            cursor: pointer; 
-            font-size: 16px; 
-            transition: background-color 0.3s; 
-        }
-        #menuButton{
-            margin-bottom: 0%;
+        .tmi, .menu-button, .deb, .ini, .tmi-buttom { /* 버튼 높이 설정 */
+            background-color: #007BFF; /* 기본 배경색 */
+            color: white; /* 글자색 */
+            border: none; /* 테두리 없음 */
+            border-radius: 25px; /* 둥근 모서리 */
+            padding: 10px 20px; /* 내부 여백 */
+            margin-bottom: 3%; /* 아래 여백 */
+            cursor: pointer; /* 커서 모양 변경 */
+            font-size: 16px; /* 글자 크기 */
+            transition: background-color 0.3s; /* 배경색 변화 애니메이션 */
         }
         .menu-button:hover {
             background-color: #0056b3; /* 호버 시 더 어두운 파란색 */
         }
-
+        #menu-bottom {
+            display: non; /* 잘못된 속성 값, 'none'으로 수정 필요 */
+            flex-direction: column; /* 세로 방향 정렬 */
+            position: fixed; /* 고정 위치 */
+            top: 60px; /* 상단에서의 위치 */
+            left: 10px; /* 왼쪽에서의 위치 */
+            background-color: rgba(255, 255, 255, 0.9); /* 반투명 배경 */
+            border: 1px solid #ccc; /* 테두리 */
+            border-radius: 5px; /* 둥근 모서리 */
+            padding: 10px; /* 내부 여백 */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+        }
         /* 설명 박스 스타일 */
-        #exa{
+        #exa {
             display: none; /* 설명 박스는 기본적으로 숨김 */
-            flex-direction: column;
-            position: absolute;
-            top: 60px;
-            left: 10px;
-            background-color: rgba(255, 255, 255, 0.9);
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            flex-direction: column; /* 세로 방향 정렬 */
+            position: fixed; /* 고정 위치 */
+            top: 60px; /* 상단에서의 위치 */
+            left: 10px; /* 왼쪽에서의 위치 */
+            background-color: rgba(255, 255, 255, 0.9); /* 반투명 배경 */
+            border: 1px solid #ccc; /* 테두리 */
+            border-radius: 5px; /* 둥근 모서리 */
+            padding: 10px; /* 내부 여백 */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+        }
+        .ini {
+            background-color: #007BFF; /* 기본 배경색 */
+            color: white; /* 글자색 */
+            border: none; /* 테두리 없음 */
+            border-radius: 25px; /* 둥근 모서리 */
+            padding: 10px 20px; /* 내부 여백 */
+            cursor: pointer; /* 커서 모양 변경 */
+            font-size: 16px; /* 글자 크기 */
+            transition: background-color 0.3s; /* 배경색 변화 애니메이션 */
+        }
+        .ini:hover {
+            background-color: #0056b3; /* 호버 시 더 어두운 파란색 */
         }
         .deb {
-            background-color: #007BFF; 
-            color: white; 
-            border: none; 
-            border-radius: 25px; 
-            padding: 10px 20px; 
-            cursor: pointer; 
-            font-size: 16px; 
-            transition: background-color 0.3s; 
+            background-color: #007BFF; /* 기본 배경색 */
+            color: white; /* 글자색 */
+            border: none; /* 테두리 없음 */
+            border-radius: 25px; /* 둥근 모서리 */
+            padding: 10px 20px; /* 내부 여백 */
+            cursor: pointer; /* 커서 모양 변경 */
+            font-size: 16px; /* 글자 크기 */
+            transition: background-color 0.3s; /* 배경색 변화 애니메이션 */
         }
         .deb:hover {
             background-color: #0056b3; /* 호버 시 더 어두운 파란색 */
         }
         
         .button-container {
-            display: flex; 
+            display: flex; /* 플렉스 박스 레이아웃 */
             gap: 10px; /* 버튼 간의 간격 */
-            align-items: center;
+            align-items: center; /* 수직 정렬 */
+            justify-content: center; /* 수평 정렬 */
+            position: fixed; /* 고정 위치에 배치 */
+            top: 10px; /* 상단에서의 위치 */
+            left: 10px; /* 왼쪽에서의 위치 */
+            z-index: 2; /* 다른 요소 위에 표시되도록 설정 */
+        }
+        .description {
+            display: none; /* 기본적으로 설명은 숨김 */
+            position: absolute; /* 버튼 아래에 위치하도록 설정 */
+            top: 50px; /* 설명 버튼 아래에 위치 */
+            left: 10px; /* 왼쪽 정렬 */
+            background-color: rgba(0, 0, 0, 0.7); /* 배경색 추가 (투명도 조절 가능) */
+            color: white; /* 글자색 */
+            padding: 10px; /* 내부 여백 */
+            border-radius: 5px; /* 둥근 모서리 */
+            z-index: 3; /* 다른 요소 위에 표시되도록 설정 */
         }
     </style>
     <script>
         // 메뉴 토글 함수
         function toggleMenu() {
-            const menu = document.getElementById('menu');
-            const menuButton = document.getElementById('menuButton');
-
+            const menu = document.getElementById('menu'); /* 메뉴 요소 선택 */
+            const menuButton = document.getElementById('menuButton'); /* 메뉴 버튼 선택 */
             if (menu.style.display === 'none' || menu.style.display === '') {
-                menu.style.display = 'flex'; 
-                menuButton.innerText = '메뉴 닫기'; 
+                menu.style.display = 'flex'; /* 메뉴 표시 */
+                menuButton.innerText = '메뉴 닫기'; /* 버튼 텍스트 변경 */
             } else {
-                menu.style.display = 'none';
-                menuButton.innerText = '메뉴 열기';
+                menu.style.display = 'none'; /* 메뉴 숨김 */
+                menuButton.innerText = '메뉴 열기'; /* 버튼 텍스트 변경 */
             }
         }
 
         // 설명 박스 토글 함수
         function example() {
-            const exa = document.getElementById('exa')
-            const de = document.getElementById('de')
+            const exa = document.getElementById('exa'); /* 설명 박스 선택 */
             if (exa.style.display === 'none' || exa.style.display === '') {
-                exa.style.display = 'flex'; 
-                de.innerText = '설명 닫기'; 
+                exa.style.display = 'block'; /* 설명 표시 */
             } else {
-                exa.style.display = 'none';
-                de.innerText = '설명 열기';
+                exa.style.display = 'none'; /* 설명 숨김 */
             }
         }
         
         // 홈으로 이동하는 함수
         function abc() {
-            location.href = `/`;
+            location.href = `/`; /* 홈으로 이동 */
         }
 
         // 이전 페이지로 돌아가는 함수
         function back() {
-            const s = localStorage.getItem('start');
-            location.href = `/1/${s}`;
+            const s = localStorage.getItem('start'); /* 시작 주소 가져오기 */
+            location.href = `/1/${s}`; /* 이전 페이지로 이동 */
         }
 
-        // 설명 페이지로 이동하는 함수
-        function ex() {
-            location.href="/explanation/0"
-        }
-            
         // 알림 페이지로 이동하는 함수
         function nfc() {
-            location.href="/notification"
+            location.href="/notification"; /* 알림 페이지로 이동 */
         }
 
-        // 정보 템플릿
-        let information = `
-        <p style="font-size:200%" id="distance">총 거리: </p>;
-        <p style="font-size:200%" id="start_address">출발 주소: </p>;
-        <br>;
-        <p style="font-size:200%" id="end_address">도착 주소:</p>;
-        <br>;
-        <p style="font-size:200%" id="arrival_time">도착 시간:</p>;
-        <br>;
-        <p style="font-size: 200%" id="instruction">도보:</p>;
-        <p style="font-size: 200%" id="walktime">도보에서 도보1까지 걸리는 시간:</p>`;
-        
-
-        let state = 0;
-
-        // 정보 표시 함수
+        // 정보 버튼 클릭 시 다른 버튼 표시/숨김 함수
         function inf() {
-            const area = document.getElementById('info');
-            if (state == 0) {
-                area.innerHTML = information;
-                state = 1;
-            
-                console.log(navigation);
-                var time = navigation.legs[0].arrival_time.text;
-                var saddress = navigation.legs[0].start_address;
-                var eaddress = navigation.legs[0].end_address;
+            const menubuttom = document.getElementById('tmi'); /* TMI 박스 선택 */
+            const ini = document.getElementById('ini'); /* 정보 버튼 선택 */
+            const sizeDiv = document.querySelector('.size'); /* .size 요소 선택 */
+            const imt = document.getElementById('tmi')
 
-                // steps가 존재하는지 확인
-                if (navigation.legs.length > 0 && navigation.legs[0].steps.length > 0) {
-                    let walk_info = [];
-                    let wt_info = [];
-                    let splat = [];
-                    let splng = [];
-                    for (let i = 0; i < navigation.legs[0].steps.length; i++) {
-                        console.log(navigation.legs[0])
-                        walk = navigation.legs[0].steps[i].instructions;
-                        wt = navigation.legs[0].steps[i].duration.text;
-                        lat = navigation.legs[0].steps[i].start_point.lat();
-                        lng = navigation.legs[0].steps[i].start_point.lng();
-                        // walk와 wt 정보를 배열에 추가
-                        walk_info.push(walk);
-                        wt_info.push(wt);
-                        splat.push(lat);    
-                        splng.push(lng);
-
-                        console.log(`도보${i + 1}: ${walk}`);
-                        console.log(`소요 시간: ${wt}`);
-                        console.log(`위도:${splat}`)
-                        console.log(`경도:${splng}`)
-
-                        const element = document.createElement('div');
-                        element.innerText = `도보${i + 1}: ${walk}`;
-                        document.getElementById('instruction').appendChild(element);
-                        const element1 = document.createElement('div');
-                        element1.innerText = `도보${i + 1}에서 도보${i + 2}까지 걸리는 시간: ${wt}`;
-                        document.getElementById('walktime').appendChild(element1);
-
-
-                        
-                    }
-
-                    // AJAX를 사용하여 walk_info와 wt_info를 세션에 저장
-                    $.ajax({
-                        url: '/save_info', // 요청할 URL
-                        type: 'POST', // 요청 방식
-                        data: JSON.stringify({ walk_info: walk_info, wt_info: wt_info, splat:splat,splng:splng }), 
-                        contentType: 'application/json',
-                        success: function(response) {
-                            console.log('세션 저장 성공:', response);
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error: ' + error); 
-                        }
-                    });
-                } else {
-                    console.error("No steps available in navigation data.");
-                }
-
-                // 도착 시간 및 주소 정보 업데이트
-                document.getElementById('arrival_time').innerText = `도착 시간: ${time}`;
-                document.getElementById('start_address').innerText = `출발 주소: ${saddress}`;
-                document.getElementById('end_address').innerText = `도착 주소: ${eaddress}`;
+            if (menubuttom.style.display === 'none' || menubuttom.style.display === '') {
+                menubuttom.style.display = 'flex'; /* TMI 박스 표시 */
+                ini.innerText = '정보 닫기'; /* 버튼 텍스트 변경 */
+                ini.style.display = 'flex'; /* 추가 버튼 표시 */
+                imt.style.display = 'flex'
+                sizeDiv.style.backgroundColor = 'rgba(255, 255, 255, 1)'; /* 배경 투명도 변경 */
             } else {
-                area.innerHTML = "";
-                state = 0;
+                menubuttom.style.display = 'none'; /* TMI 박스 숨김 */
+                ini.innerText = '정보 열기'; /* 버튼 텍스트 변경 */
+                sizeDiv.style.backgroundColor = 'rgba(255, 255, 255, 0)'; /* 원래 투명도로 복원 */
+                imt.style.display = 'none'
+            }
+        }
+        
+        // 정보 템플릿
+        let aa = `
+        <p style="font-size:100%" id="start_address">출발 주소: </p>
+        <p style="font-size:100%" id="end_address">도착 주소:</p>`;
+        let tm = `<p style="font-size:100%" id="arrival_time">도착 시간:</p>`;
+        let walk_information = `<p style="font-size: 100%" id="instruction">도보:</p>`;
+        let walktime_information = `
+        <p style="font-size: 100%" id="walktime">도보에서 도보1까지 걸리는 시간:</p>`;
+        let information = `
+        <p style="font-size:100%" id="lat">위도:</p>
+        <p style="font-size:100%" id="lng">경도:</p>`;
+        
+        let state = 0; /* 상태 초기화 */
+        function saea() {
+            const area = document.getElementById('info'); /* 정보 표시 영역 선택 */
+            if (state == 0) {
+                area.innerHTML = aa; /* 출발 및 도착 주소 표시 */
+                state = 1; /* 상태 변경 */
+                console.log(navigation); /* 내비게이션 정보 출력 */
+                var saddress = navigation.legs[0].start_address; /* 출발 주소 가져오기 */
+                var eaddress = navigation.legs[0].end_address; /* 도착 주소 가져오기 */
+                document.getElementById('start_address').innerText = `출발 주소: ${saddress}`; /* 출발 주소 표시 */
+                document.getElementById('end_address').innerText = `도착 주소: ${eaddress}`; /* 도착 주소 표시 */
+            } else {
+                area.innerHTML = ""; /* 정보 초기화 */
+                state = 0; /* 상태 변경 */
+            }
+        }
+        
+        function et() {
+            const area = document.getElementById('info'); /* 정보 표시 영역 선택 */
+            if (state == 0) {
+                area.innerHTML = tm; /* 도착 시간 표시 */
+                state = 1; /* 상태 변경 */
+                console.log(navigation); /* 내비게이션 정보 출력 */
+                var time = navigation.legs[0].arrival_time.text; /* 도착 시간 가져오기 */
+                document.getElementById('arrival_time').innerText = `도착 시간: ${time}`; /* 도착 시간 표시 */
+            } else {
+                area.innerHTML = ""; /* 정보 초기화 */
+                state = 0; /* 상태 변경 */
+            }
+        }
+        
+        // 전역 변수로 선언
+        let walk_info = []; /* 도보 정보 배열 */
+        let wt_info = []; /* 도보 시간 정보 배열 */
+        let splat = []; /* 위도 배열 */
+        let splng = []; /* 경도 배열 */
+
+        function w() {
+            const area = document.getElementById('info'); /* 정보 표시 영역 선택 */
+            if (state == 0) {
+                area.innerHTML = walk_information; /* 도보 정보 초기화 */
+                state = 1; /* 상태 변경 */
+                console.log(navigation); /* 내비게이션 정보 출력 */
+                if (navigation && navigation.legs.length > 0 && navigation.legs[0].steps.length > 0) {
+                    for (let i = 0; i < navigation.legs[0].steps.length; i++) {
+                        let walk = navigation.legs[0].steps[i].instructions; /* 도보 지침 가져오기 */
+                        walk_info.push(walk); /* 도보 정보 배열에 추가 */
+                        console.log(`도보${i + 1}: ${walk}`); /* 도보 지침 출력 */
+                        const element = document.createElement('div'); /* 새로운 div 요소 생성 */
+                        element.innerText = `도보${i + 1}: ${walk}`; /* 도보 지침 텍스트 설정 */
+                        document.getElementById('instruction').appendChild(element); /* 기존 내용을 유지하며 추가 */
+                    }
+                }
+            } else {
+                area.innerHTML = ""; /* 상태가 1일 때만 초기화 */
+                state = 0; /* 상태 변경 */
+            }
+        }
+
+        function t() {
+            const area = document.getElementById('info'); /* 정보 표시 영역 선택 */
+            if (state == 0) {
+                area.innerHTML = walktime_information; /* 도보 시간 정보 초기화 */
+                state = 1; /* 상태 변경 */
+                console.log(navigation); /* 내비게이션 정보 출력 */
+                if (navigation && navigation.legs.length > 0 && navigation.legs[0].steps.length > 0) {
+                    for (let i = 0; i < navigation.legs[0].steps.length; i++) {
+                        let wt = navigation.legs[0].steps[i].duration.text; /* 도보 시간 가져오기 */
+                        wt_info.push(wt); /* 도보 시간 정보 배열에 추가 */
+                        console.log(`소요 시간: ${wt}`); /* 도보 시간 출력 */
+                        const element1 = document.createElement('div'); /* 새로운 div 요소 생성 */
+                        element1.innerText = `도보${i + 1}에서 도보${i + 2}까지 걸리는 시간: ${wt}`; /* 도보 시간 텍스트 설정 */
+                        document.getElementById('walktime').appendChild(element1); /* 기존 내용을 유지하며 추가 */
+                    }
+                }
+            } else {
+                area.innerHTML = ""; /* 상태가 1일 때만 초기화 */
+                state = 0; /* 상태 변경 */
+            }
+        }
+
+        function lat_lng() {
+            const area = document.getElementById('info'); /* 정보 표시 영역 선택 */
+            if (state == 0) {
+                area.innerHTML = information; /* 위도 및 경도 정보 초기화 */
+                state = 1; /* 상태 변경 */
+                console.log(navigation); /* 내비게이션 정보 출력 */
+                if (navigation && navigation.legs.length > 0 && navigation.legs[0].steps.length > 0) {
+                    for (let i = 0; i < navigation.legs[0].steps.length; i++) {
+                        let lat = navigation.legs[0].steps[i].start_point.lat(); /* 위도 가져오기 */
+                        let lng = navigation.legs[0].steps[i].start_point.lng(); /* 경도 가져오기 */
+                        splat.push(lat); /* 위도 배열에 추가 */
+                        splng.push(lng); /* 경도 배열에 추가 */
+                        console.log(`위도:${lat}, 경도:${lng}`); /* 위도 및 경도 출력 */
+                        const element = document.createElement('div'); /* 새로운 div 요소 생성 */
+                        element.innerText = `도보${i + 1}위도: ${lat}`; /* 위도 텍스트 설정 */
+                        document.getElementById('lat').appendChild(element); /* 기존 내용을 유지하며 추가 */
+                        const element1 = document.createElement('div'); /* 새로운 div 요소 생성 */
+                        element1.innerText = `도보${i + 1}경도: ${lng}`; /* 경도 텍스트 설정 */
+                        document.getElementById('lng').appendChild(element1); /* 기존 내용을 유지하며 추가 */
+                    }
+                }
+            } else {
+                area.innerHTML = ""; /* 상태가 1일 때만 초기화 */
+                state = 0; /* 상태 변경 */
+            }
+        }
+
+        // 데이터 저장 함수
+        function ex() {
+            if (state == 0) {
+                state = 1; /* 상태 변경 */
+                console.log(navigation); /* 내비게이션 정보 출력 */
+                if (navigation && navigation.legs.length > 0 && navigation.legs[0].steps.length > 0) {
+                    for (let i = 0; i < navigation.legs[0].steps.length; i++) {
+                        let walk = navigation.legs[0].steps[i].instructions; /* 도보 지침 가져오기 */
+                        let lat = navigation.legs[0].steps[i].start_point.lat(); /* 위도 가져오기 */
+                        let lng = navigation.legs[0].steps[i].start_point.lng(); /* 경도 가져오기 */
+                        let wt = navigation.legs[0].steps[i].duration.text; /* 도보 시간 가져오기 */
+                        wt_info.push(wt); /* 도보 시간 정보 배열에 추가 */
+                        splat.push(lat); /* 위도 배열에 추가 */
+                        splng.push(lng); /* 경도 배열에 추가 */
+                        walk_info.push(walk); /* 도보 정보 배열에 추가 */
+                    
+                        // AJAX 요청을 통해 데이터 저장
+                        $.ajax({
+                            url: '/save_info', /* 요청할 URL */
+                            type: 'POST', /* 요청 방식 */
+                            data: JSON.stringify({
+                                walk_info: walk_info, /* 도보 정보 */
+                                wt_info: wt_info, /* 도보 시간 정보 */
+                                splat: splat, /* 위도 정보 */
+                                splng: splng /* 경도 정보 */
+                            }), /* JSON 형식으로 데이터 전송 */
+                            contentType: 'application/json', /* 전송할 데이터 형식 */
+                            success: function(response) {
+                                console.log('세션 저장 성공:', response); /* 성공 메시지 출력 */
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error: ' + error); /* 오류 메시지 출력 */
+                            }
+                        });
+                        location.href = '/explanation/0'; /* 설명 페이지로 이동 */
+                    }
+                }
             }
         }
     </script>
 </head>
 <body>
     <div class="size">
-        <div class="button-container"> <!-- 버튼들을 감싸는 div 추가 -->
-            <button id="de" class="deb" onclick="example()">설명 열기</button>
-            <button id="menuButton" class="menu-button" onclick="toggleMenu()">메뉴 열기</button>
+        <!-- 버튼들을 감싸는 div를 맨 위로 이동 -->
+        <div class="button-container"> 
+            <button id="de" class="deb" onclick="example()">설명 열기</button> <!-- 설명 열기 버튼 -->
+            <button id="menuButton" class="menu-button" onclick="toggleMenu()">메뉴 열기</button> <!-- 메뉴 열기 버튼 -->
+            <button id="ini" class="menu-button" onclick="inf()">정보 열기</button> <!-- 정보 열기 버튼 -->
         </div>
-        <div id="exa"> 
-            <p>버스마커를 클릭면 버스정보가 나옵니다.</p>
+        <div id="exa" style="display: none;"> 
+            <p>버스마커를 클릭면 버스정보가 나옵니다.</p> <!-- 설명 내용 -->
             <p>메뉴 버튼을 누르면 다양한 기능을 볼수있습니다.</p>
             <p>정보 버튼을 누르면 상세한 정보들이 나옵니다.</p>
             <p>처음부터라는 버튼은 출발지점부터 다시 적을수 있습니다.</p>
             <p>도착지점 부터 다시 적기는 도착지점 부터 다시 적을수 있습니다.</p>
             <p>로드뷰는 자기가 원하는 위치에 로드뷰를 볼수 있습니다.</p>
-            <p>길찾기시작은 지도랑 로드뷰 글로 설명을 해줍니다 하지만 정보 버튼을 누른 다음에 사용을 해주세요.</p>
-            <p>되돌아가면 돌아가기 버튼을 누르거나 눌렀던 버튼을 다시 눌러주세요.</p>
+            <p>돌아가면 돌아가기 버튼을 누르거나 눌렀던 버튼을 다시 눌러주세요.</p>
         </div>
         <div id="menu"> <!-- 메뉴 -->
-            <button class="menu-button" onclick="inf()">정보</button>
-            <button class="menu-button" onclick="abc()">처음부터</button>
-            <button class="menu-button" onclick="back()">도착지점 다시 적기</button>
-            <button class="menu-button" onclick="nfc()">로드뷰 길</button>
-            <button class="menu-button" onclick="ex()">길찾기 시작</button>
-            
+            <button class="menu-button" onclick="abc()">처음부터</button> <!-- 처음부터 버튼 -->
+            <button class="menu-button" onclick="back()">도착지점 다시 적기</button> <!-- 도착지점 다시 적기 버튼 -->
+            <button class="menu-button" onclick="nfc()">로드뷰 길</button> <!-- 로드뷰 길 버튼 -->
+            <button class="menu-button" onclick="ex()">길찾기 시작</button> <!-- 길찾기 시작 버튼 -->
         </div>
+        <div id="tmi"> <!-- TMI 박스 -->
+            <button class="tmi-buttom" onclick="saea()">출발 도착 주소</button> <!-- 출발 도착 주소 버튼 -->
+            <button class="tmi-buttom" onclick="et()">도착시간</button> <!-- 도착시간 버튼 -->
+            <button class="tmi-buttom" onclick="w()">도보</button> <!-- 도보 버튼 -->
+            <button class="tmi-buttom" onclick="t()">도보 시간</button> <!-- 도보 시간 버튼 -->
+            <button class="tmi-buttom" onclick="lat_lng()">위도,경도</button> <!-- 위도, 경도 버튼 -->
+        </div>
+        <div id="info"></div>  <!-- 설명이 표시될 영역 -->
     </div>
     
-    <div id="info"></div>  
-    <div id="map"></div>
+    <div id="map"></div> <!-- 지도 표시 영역 -->
 
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVnteL9JlOKZwa0cUk52PgpuqVYi7rZZQ&callback=initMap"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVnteL9JlOKZwa0cUk52PgpuqVYi7rZZQ&callback=initMap"></script> <!-- Google Maps API -->
     <script>
-        let map;
-        let directionsService;
-        let directionsRenderer;
-        let navigation;
-
+        let map; /* 지도 객체 */
+        let directionsService; /* 방향 서비스 객체 */
+        let directionsRenderer; /* 방향 렌더러 객체 */
+        let navigation; /* 내비게이션 정보 */
 
         function initMap() {
-            const defaultLat = localStorage.getItem('start'); 
-            const defaultLng = localStorage.getItem('end');
-            const defaultLocation = { lat: defaultLat, lng: defaultLng };
+            const defaultLat = parseFloat(localStorage.getItem('startLat')); /* 시작 위도 가져오기 */
+            const defaultLng = parseFloat(localStorage.getItem('startLng')); /* 시작 경도 가져오기 */
+            const defaultLocation = { lat: defaultLat, lng: defaultLng }; /* 기본 위치 설정 */
 
             map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 14,
-                center: defaultLocation,
-                styles: [ 
-                    {
-                        "featureType": "water",
-                        "elementType": "geometry",
-                        "stylers": [
-                            {
-                                "color": "#blue"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "landscape",
-                        "elementType": "geometry",
-                        "stylers": [
-                            {
-                                "color": "#f2f2f2"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road",
-                        "elementType": "geometry",
-                        "stylers": [
-                            {
-                                "color": "#ffffff"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "poi",
-                        "elementType": "geometry",
-                        "stylers": [
-                            {
-                                "color": "#e0e0e0"
-                            }
-                        ]
-                    }
-                ]
+                zoom: 14, /* 초기 줌 레벨 */
+                center: defaultLocation, /* 지도 중심 설정 */
             });
-            directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer();
-            directionsRenderer.setMap(map);
 
-            if (navigator.geolocation) {
+            directionsService = new google.maps.DirectionsService(); /* 방향 서비스 초기화 */
+            directionsRenderer = new google.maps.DirectionsRenderer(); /* 방향 렌더러 초기화 */
+            directionsRenderer.setMap(map); /* 지도를 방향 렌더러에 설정 */
+
+            if (navigator.geolocation) { /* 사용자의 위치 정보 접근 */
                 navigator.geolocation.getCurrentPosition(function(position) {
                     const userLocation = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
+                        lat: position.coords.latitude, /* 사용자의 위도 */
+                        lng: position.coords.longitude /* 사용자의 경도 */
                     };
 
                     // 사용자의 현재 위치에 마커 추가
                     new google.maps.Marker({
-                        position: userLocation,
-                        map: map,
-                        title: '내 위치',
+                        position: userLocation, /* 마커 위치 */
+                        map: map, /* 마커를 표시할 지도 */
+                        title: '내 위치', /* 마커 제목 */
                         icon: {
-                            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" /* 마커 아이콘 */
                         }
                     });
 
                     // 지도의 중심을 사용자의 위치로 이동
-                    map.setCenter(userLocation);
+                    map.setCenter(userLocation); /* 지도 중심 변경 */
+
+                    // 주변 버스 정류장 검색
+                    const service = new google.maps.places.PlacesService(map);
+                    service.nearbySearch({
+                        location: userLocation, /* 검색할 위치 */
+                        radius: 500, /* 500미터 이내의 버스 정류장 검색 */
+                        type: ['bus_station'] /* 검색할 장소 유형 */
+                    }, (results, status) => {
+                        if (status === google.maps.places.PlacesServiceStatus.OK) {
+                            results.forEach(place => {
+                                // 각 버스 정류장에 마커 추가
+                                const marker = new google.maps.Marker({
+                                    position: place.geometry.location, /* 마커 위치 */
+                                    map: map, /* 마커를 표시할 지도 */
+                                    title: place.name /* 버스 정류장 이름 */
+                                });
+
+                                // 마커 클릭 시 정보 창 표시
+                                const infoWindow = new google.maps.InfoWindow({
+                                    content: `<div><strong>${place.name}</strong><br>위치: ${place.vicinity}</div>` /* 정보 창 내용 */
+                                });
+
+                                marker.addListener("click", () => {
+                                    infoWindow.open(map, marker); /* 정보 창 열기 */
+                                });
+                            });
+                        } else {
+                            console.error('버스 정류장 검색 실패: ' + status); /* 오류 메시지 출력 */
+                        }
+                    });
                 });
             }
-            route();
+            route(); /* 경로 요청 */
         }
 
         function route() {
-            console.log("길 찾기 실행");
-            const start = localStorage.getItem('start');
-            const end = localStorage.getItem('end');
+            console.log("길 찾기 실행"); /* 경로 요청 로그 */
+            const start = localStorage.getItem('start'); /* 시작 주소 가져오기 */
+            const end = localStorage.getItem('end'); /* 도착 주소 가져오기 */
 
             if (start && end) {
                 const request = {
-                    origin: start,
-                    destination: end,
-                    travelMode: google.maps.TravelMode.TRANSIT
+                    origin: start, /* 시작 위치 */
+                    destination: end, /* 도착 위치 */
+                    travelMode: google.maps.TravelMode.TRANSIT /* 대중교통 모드 */
                 };
 
                 directionsService.route(request, function(result, status) {
                     if (status == 'OK') {
-                        directionsRenderer.setDirections(result);
-                        navigation = result.routes[0];
+                        directionsRenderer.setDirections(result); /* 경로 설정 */
+                        navigation = result.routes[0]; /* 내비게이션 정보 저장 */
                     }
                 }); 
             }
-            const result = JSON.parse('{{ result | tojson | safe }}');
-            console.log(result);
-
-            if (result.item && result.item.length > 0) {
-                result.item.forEach((station) => {
-                    const marker = new google.maps.Marker({
-                        position: { lat: station.lat, lng: station.lon },
-                        map: map,
-                        title: '버스 정류장'
-                    });
-
-                    const infoWindow = new google.maps.InfoWindow({
-                        content: `
-                            <div>
-                                <strong>위도:</strong> ${station.lat}<br>
-                                <strong>경도:</strong> ${station.lon}<br>
-                                <strong>버스 정보:</strong><br>
-                                ${station.bus.map(bus => `
-                                    <div>
-                                        <strong>노선:</strong> ${bus.routeno}<br>
-                                        <strong>도착 시간 몇뒤:</strong> ${formatTime(bus.arrtime)}<br>
-                                        <strong>경로 유형:</strong> ${bus.routetp}<br>
-                                        <strong>차량 종류:</strong> ${bus.vehicletp}<br>
-                                        <strong>버스 타는 곳:</strong> ${bus.nodenm}
-                                    </div>
-                                `).join('<hr>')}
-                            </div>
-                        `
-                    });
-
-                    marker.addListener("click", () => {
-                        infoWindow.open(map, marker);
-                    });
-                });
-            }
         }
-        function formatTime(time) {
-            const minutes = Math.floor(time / 60);
-            const seconds = time % 60;
-            return `${minutes}분 ${seconds}초`;
-        }
-    </script>
-    <script>
-        // 페이지가 로드될 때 자동으로 세션 초기화
-        window.onload = function() {
-            clearSession(); // 세션 초기화 함수 호출
-        };
     </script>
 </body>
 </html>

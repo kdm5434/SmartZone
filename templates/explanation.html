@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>길정보</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVnteL9JlOKZwa0cUk52PgpuqVYi7rZZQ&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVnteL9JlOKZwa0cUk52PgpuqVYi7rZZQ&libraries=places&callback=initMap" async defer></script>
     <style>
         #map {
             flex: 1;
             width: 100%;
         }
-        .bnb{
+        .bnb {
             background-color: #007BFF; 
             color: white; 
             border: none; 
@@ -29,9 +29,9 @@
             console.log(walk_info)
             const currentEx = parseInt(location.href.split('/').pop()); // URL의 마지막 부분을 가져옴
             const newEx = currentEx + 1; // 1 증가
-            // 다음 단계가 존재하는지 확인
+            // 다음 ��계가 존재하는지 확인
             if (newEx >= walk_info.length) { 
-                alert("다음 단게는 없습니다. 길이: " + '{{ walk_info }}'); // 경고 메시지
+                alert("다음 단계는 없습니다. 길이: " + '{{ walk_info }}'); // 경고 메시지
             } else {
                 location.href = `/explanation/${newEx}`; // 새로운 URL로 리다이렉트
             }
@@ -46,10 +46,11 @@
                 location.href = `/explanation/${newEx}`; // 새로운 URL로 리다이렉트
             }
         }
-        function back(){
+        function back() {
             var y = document.getElementById('end');
-                location.href = `/2/${y}`
-        }        // 교통수단으로 경로 요청
+            location.href = `/2/${y}`
+        }        
+        // 교통수단으로 경로 요청
         function requestTransitRoute(start, end) {
             const directionsService = new google.maps.DirectionsService();
             const request = {
@@ -69,31 +70,73 @@
         }
         // 로드뷰 초기화 함수
         function initMap() {
-            let startlat = '{{ splat }}'; // '{{ splat }}' 값을 사용
-            let startlng = '{{ splng }}'; // '{{ splng }}' 값을 사용
-            console.log(Number(startlat))
-            console.log(Number(startlng))
+            let startlat = parseFloat('{{ splat }}'); // '{{ splat }}' 값을 사용
+            let startlng = parseFloat('{{ splng }}'); // '{{ splng }}' 값을 사용
+            const myLocation = { lat: startlat, lng: startlng };
+
             var panorama = new google.maps.StreetViewPanorama(
                 document.getElementById('pano'), {
-                    position: {lat: Number(startlat), lng: Number(startlng)}, // 초기 위치 설정
-                    center: {lat:  Number(startlat), lng: Number(startlng)},
+                    position: myLocation, // 초기 위치 설정
                     zoom: 1
                 });
             var map = new google.maps.Map(
                 document.getElementById('map'), {
-                    center: {lat: Number(startlat), lng: Number(startlng)}, // 초기 위치 설정
+                    center: myLocation, // 초기 위치 설정
                     zoom: 14
                 });
             
-            // 마커 추가
-            const walkInfoLocation = { lat: Number(startlat), lng: Number(startlng) }; // walk_info의 위치로 변경 필요
-            const marker = new google.maps.Marker({
-                position: walkInfoLocation,
+            // 내 위치에 마커 추가
+            new google.maps.Marker({
+                position: myLocation,
                 map: map,
-                title: '도보 정보 위치' // 마커의 제목
+                title: '내 위치' // 마커의 제목
+            });
+
+            // walk_info 마커 추가 (예시로 색깔을 변경)
+            const walkInfoMarker = new google.maps.Marker({
+                position: myLocation, // walk_info의 위치
+                map: map,
+                title: 'Walk Info', // 마커의 제목
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE, // 원형 마커
+                    scale: 10, // 크기 조정
+                    fillColor: 'blue', // 마커 색깔
+                    fillOpacity: 1, // 불투명도
+                    strokeColor: 'white', // 테두리 색깔
+                    strokeWeight: 2 // 테두리 두께
+                }
+            });
+
+            // 주변 버스 정류장 검색
+            const service = new google.maps.places.PlacesService(map);
+            service.nearbySearch({
+                location: myLocation,
+                radius: 500, // 500미터 이내의 버스 정류장 검색
+                type: ['bus_station'] // 검색할 장소 유형
+            }, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    results.forEach(place => {
+                        // 각 버스 정류장에 마커 추가
+                        const marker = new google.maps.Marker({
+                            position: place.geometry.location,
+                            map: map,
+                            title: place.name // 버스 정류장 이름
+                        });
+
+                        // 마커 클릭 시 정보 창 표시
+                        const infoWindow = new google.maps.InfoWindow({
+                            content: `<div><strong>${place.name}</strong><br>위치: ${place.vicinity}</div>`
+                        });
+
+                        marker.addListener("click", () => {
+                            infoWindow.open(map, marker);
+                        });
+                    });
+                } else {
+                    console.error('버스 정류장 검색 실패: ' + status);
+                }
             });
         }
-    
     </script>
 </head>
 <body>

@@ -23,6 +23,16 @@
             left: 10px;
             font-size: 100%;
         }
+        .style {
+            background-color: #007BFF; 
+            color: white; 
+            border: none; 
+            border-radius: 20px; 
+            padding: 5px 15px; 
+            margin-bottom: 3%;
+            cursor: pointer; 
+            font-size: 14px; 
+        }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -54,9 +64,9 @@
             document.querySelector('button[onclick="loadStreetView()"]').addEventListener('click', loadStreetView);
         });
     </script>
-    <button onclick="history.back()">뒤로가기</button>
+    <button class="style" onclick="history.back()"><-뒤로가기</button>
     <input id="address" type="text" placeholder="주소를 입력하세요">
-    <button  onclick="loadStreetView()">로드뷰 보기</button>
+    <button  class="style" onclick="loadStreetView()">로드뷰 보기</button>
 </head>
 <body>
     <div id="pano"></div> <!-- 'pano' 요소 추가 -->
